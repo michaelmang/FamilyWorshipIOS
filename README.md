@@ -1,6 +1,6 @@
 # Family Worship IOS
 
-Family Worship is a web and mobile application for helping families manage family worship sessions. This repository is for IOS app written in React Native.
+Family Worship is a web and mobile application for helping families manage family worship sessions. This repository is for IOS app.
 
 ![](https://s3-us-west-2.amazonaws.com/s.cdpn.io/827672/GitHub%20Cover.png)
 

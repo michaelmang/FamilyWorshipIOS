@@ -70,6 +70,7 @@ export default class AddSession extends React.Component {
       const bookURL = "https://raw.githubusercontent.com/aruljohn/Bible-kjv/master/Genesis.json";
       axios.get(bookURL)
         .then((response) => {
+          const verses = response.data.chapters[this.state.chapter - 1].verses.length;
           const length = response.data.chapters.length;
           let chapters = [];
           for(let i = 0; i < length; i++) {
@@ -78,7 +79,8 @@ export default class AddSession extends React.Component {
             chapters.push(numPush)
           }
           this.setState({
-            chapters: chapters
+            chapters: chapters,
+            verses: verses
           });
         })
         .catch((error) => {
@@ -95,7 +97,6 @@ export default class AddSession extends React.Component {
       const bookURL = "https://raw.githubusercontent.com/aruljohn/Bible-kjv/master/" + this.state.book + ".json";
       axios.get(bookURL)
         .then((response) => {
-          const verses = response.data.chapters[this.state.chapter - 1].verses.length;
           const length = response.data.chapters.length;
           let chapters = [];
           for(let i = 0; i < length; i++) {
@@ -104,8 +105,7 @@ export default class AddSession extends React.Component {
             chapters.push(numPush)
           }
           this.setState({
-            chapters: chapters,
-            verses: verses
+            chapters: chapters
           });
         })
         .catch((error) => {

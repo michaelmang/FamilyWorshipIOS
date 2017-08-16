@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, TextInput, Picker } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 var moment = require('moment');
 import { Redirect } from 'react-router-native';
@@ -12,6 +12,7 @@ export default class AddSession extends React.Component {
     super(props);
 
     this.date = moment().format('L');
+    this.time = moment().format('hh:mm a');
 
     this.state = {
       fontLoaded: false,
@@ -37,14 +38,14 @@ export default class AddSession extends React.Component {
         'Jude',            'Revelation'
       ],
       date: this.date,
-      time: "",
+      time: this.time,
       openingNotes: "",
-      firstPsalm: "",
-      book: "",
+      firstPsalm: "1",
+      book: "Genesis",
       chapters: [],
-      chapter: "",
+      chapter: "1",
       messageNotes: "",
-      secondPsalm: "",
+      secondPsalm: "1",
       closingNotes: "",
       verses: "",
       sessionsResponse: []
@@ -53,23 +54,82 @@ export default class AddSession extends React.Component {
     this.stateProps = this.props.store.getState();
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleBook = this.handleBook.bind(this);
+    this.handleChapter = this.handleChapter.bind(this);
 
-    // this.handleTime = this.handleTime.bind(this);
-    // this.handleOpeningNotes = this.handleOpeningNotes.bind(this);
-    // this.handleFirstPsalm = this.handleFirstPsalm.bind(this);
-    // this.handleBook = this.handleBook.bind(this);
-    // this.handleChapter = this.handleChapter.bind(this);
-    // this.handleMessageNotes =  this.handleMessageNotes.bind(this);
-    // this.handleSecondPsalm = this.handleSecondPsalm.bind(this);
-    // this.handleClosingNotes =  this.handleClosingNotes.bind(this);
   }
 
   async componentDidMount() {
     await Font.loadAsync({
       'gentium-book-basic': require('../assets/fonts/GenBkBasR.ttf'),
+      'Roboto': require('../assets/fonts/Roboto.ttf'),
+      'Roboto_medium': require('../assets/fonts/Roboto-Medium.ttf')
     });
 
-    this.setState({ fontLoaded: true });
+    this.setState({ fontLoaded: true }, () => {
+      const bookURL = "https://raw.githubusercontent.com/aruljohn/Bible-kjv/master/Genesis.json";
+      axios.get(bookURL)
+        .then((response) => {
+          const length = response.data.chapters.length;
+          let chapters = [];
+          for(let i = 0; i < length; i++) {
+            let num = i + 1;
+            let numPush = num.toString();
+            chapters.push(numPush)
+          }
+          this.setState({
+            chapters: chapters
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  }
+
+  handleBook(itemValue, itemIndex) {
+    const text = itemValue.replace(/\s+/g, '');
+    this.setState({
+      book: text
+    }, () => {
+      const bookURL = "https://raw.githubusercontent.com/aruljohn/Bible-kjv/master/" + this.state.book + ".json";
+      axios.get(bookURL)
+        .then((response) => {
+          const verses = response.data.chapters[this.state.chapter - 1].verses.length;
+          const length = response.data.chapters.length;
+          let chapters = [];
+          for(let i = 0; i < length; i++) {
+            let num = i + 1;
+            let numPush = num.toString();
+            chapters.push(numPush)
+          }
+          this.setState({
+            chapters: chapters,
+            verses: verses
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  }
+
+  handleChapter(itemValue, itemIndex) {
+    this.setState({
+      chapter: itemValue
+    }, () => {
+      const bookURL = "https://raw.githubusercontent.com/aruljohn/Bible-kjv/master/" + this.state.book + ".json";
+      axios.get(bookURL)
+        .then((response) => {
+          const verses = response.data.chapters[this.state.chapter - 1].verses.length;
+          this.setState({
+            verses: verses
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
   }
 
   handleSubmit() {
@@ -106,7 +166,34 @@ export default class AddSession extends React.Component {
   render() {
     const backgroundImg = "https://images.pexels.com/photos/159679/bible-job-reading-christianity-159679.jpeg?w=940&h=650&auto=compress&cs=tinysrgb";
     const minDate = moment().format('L');
-    const maxDate = "12/31/2018";
+
+    let psalms = [];
+
+    for (let i = 0; i < 150; i++) {
+      let num = i + 1;
+      let numString = num.toString();
+      psalms.push(numString);
+    }
+
+    const psalmPickerItems = psalms.map((psalm, index) => {
+      let value = index + 1;
+      return (
+        <Picker.Item key={index} label={"Psalm " + psalm} value={value.toString()} />
+      )
+    })
+
+    const bookPickerItems = this.state.books.map((book, index) => {
+      return (
+        <Picker.Item key={index} label={book} value={book} />
+      )
+    })
+
+    const chapterPickerItems = this.state.chapters.map((chapter, index) => {
+      return (
+        <Picker.Item key={index} label={chapter.toString()} value={chapter.toString()} />
+      )
+    })
+
     return (
       <View style={styles.container}>
       { this.state.added ? (
@@ -116,33 +203,151 @@ export default class AddSession extends React.Component {
             <Image source={{uri: backgroundImg}} style={styles.backgroundImg} />
             <View style={styles.overlay} />
             { this.state.fontLoaded ? (
-                  <View style={styles.form}>
+                  <ScrollView>
+                  <View
+                    style={styles.form}
+                  >
                     <Text style={styles.title}>Add Session</Text>
+                    <Text style={styles.label}>Date</Text>
                     <DatePicker
-                      style={{width: 200}}
+                      style={{width: "100%", marginBottom: 5}}
                       date={this.state.date}
                       mode="date"
                       placeholder="Select date"
                       format="MM/DD/YYYY"
                       minDate={minDate}
-                      maxDate={maxDate}
                       confirmBtnText="Confirm"
                       cancelBtnText="Cancel"
                       customStyles={{
                         dateIcon: {
-                          position: 'absolute',
-                          left: 0,
-                          top: 4,
-                          marginLeft: 0
+                          display: "none"
                         },
                         dateInput: {
-                          marginLeft: 36
+                          marginLeft: 0,
+                          padding: 10,
+                          backgroundColor: "rgba(10, 22, 31, 0.7)",
+                          borderWidth: 0
                         },
                         dateText: {
-                          color: "#fff"
+                          color: "rgba(255, 255, 255, 0.7)",
+                          marginRight: "auto"
                         }
                       }}
-                      onDateChange={(date) => {this.setState({date: date}, () => {console.log(this.state.date);} )}}
+                      onDateChange={(date) => {this.setState({date: date})}}
+                    />
+                    <Text style={styles.label}>Time</Text>
+                    <DatePicker
+                      style={{width: "100%", marginBottom: 5}}
+                      date={this.state.time}
+                      mode="time"
+                      format="hh:mm a"
+                      is24Hour={false}
+                      placeholder="Select time"
+                      confirmBtnText="Confirm"
+                      cancelBtnText="Cancel"
+                      customStyles={{
+                        dateIcon: {
+                          display: "none"
+                        },
+                        dateInput: {
+                          marginLeft: 0,
+                          padding: 10,
+                          backgroundColor: "rgba(10, 22, 31, 0.7)",
+                          borderWidth: 0
+                        },
+                        dateText: {
+                          color: "rgba(255, 255, 255, 0.7)",
+                          marginRight: "auto"
+                        }
+                      }}
+                      onDateChange={(date) => { this.setState({time: date} )}}
+                    />
+                    <Text style={styles.label}>Opening Prayer Notes</Text>
+                    <TextInput
+                      placeholder="Type as much as you want"
+                      multiLine={true}
+                      placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                      style={styles.textInput}
+                      onChangeText={(text) => { this.setState({openingNotes: text} )}}
+                      value={this.state.openingNotes}
+                    />
+                    <Text style={styles.label}>First Psalm</Text>
+                    <Picker
+                      style={{
+                        width: "100%",
+                        height: 180,
+                        marginBottom: 5
+                      }}
+                      itemStyle={{
+                        color: 'white',
+                        fontSize: 14,
+                      }}
+                      selectedValue={this.state.firstPsalm}
+                      onValueChange={(itemValue, itemIndex) => this.setState({firstPsalm: itemValue})}>
+                      {psalmPickerItems}
+                    </Picker>
+                    <Text style={styles.label}>Book</Text>
+                    <Picker
+                      style={{
+                        width: "100%",
+                        height: 180,
+                        marginBottom: 5
+                      }}
+                      itemStyle={{
+                        color: 'white',
+                        fontSize: 14,
+                      }}
+                      selectedValue={this.state.book}
+                      onValueChange={this.handleBook}>
+                      {bookPickerItems}
+                    </Picker>
+                    <Text style={styles.label}>Chapter</Text>
+                    <Picker
+                      style={{
+                        width: "100%",
+                        height: 180,
+                        marginBottom: 5
+                      }}
+                      itemStyle={{
+                        color: 'white',
+                        fontSize: 14,
+                      }}
+                      selectedValue={this.state.chapter}
+                      onValueChange={this.handleChapter}>
+                      {chapterPickerItems}
+                    </Picker>
+                    <Text style={styles.label}>Message Notes</Text>
+                    <TextInput
+                      placeholder="Type as much as you want"
+                      multiLine={true}
+                      placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                      style={styles.textInput}
+                      onChangeText={(text) => { this.setState({messageNotes: text} )}}
+                      value={this.state.messageNotes}
+                    />
+                    <Text style={styles.label}>Second Psalm</Text>
+                    <Picker
+                      style={{
+                        width: "100%",
+                        height: 180,
+                        marginBottom: 5
+                      }}
+                      itemStyle={{
+                        color: 'white',
+                        fontSize: 14,
+                      }}
+                      selectedValue={this.state.secondPsalm}
+                      onValueChange={(itemValue, itemIndex) => this.setState({secondPsalm: itemValue})}>
+                      {psalmPickerItems}
+                    </Picker>
+                    <Text style={styles.label}>Closing Prayer Notes</Text>
+                    <TextInput
+                      placeholder="Type as much as you want"
+                      multiLine={true}
+                      placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                      style={styles.textInput}
+                      onChangeText={(text) => { this.setState({closingNotes: text} )}}
+                      value={this.state.closingNotes}
                     />
                     <View style={styles.button}>
                       <TouchableOpacity onPress={this.handleSubmit}>
@@ -150,6 +355,7 @@ export default class AddSession extends React.Component {
                       </TouchableOpacity>
                     </View>
                   </View>
+                  </ScrollView>
                 ) : null
             }
           </View>
@@ -196,15 +402,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   form: {
+    padding: 10,
+    paddingTop: 35,
     flex: 1,
     alignItems: 'flex-start',
-    justifyContent: 'center',
-    width: "100%",
-    padding: 20
+    justifyContent: 'flex-start',
+    width: "100%"
   },
   textInput: {
     height: 40,
     width: "100%",
+    marginTop: 5,
     marginBottom: 5,
     padding: 10,
     backgroundColor: "rgba(10, 22, 31, 0.7)",
@@ -213,6 +421,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     marginTop: 25,
+    width: "100%",
     backgroundColor: "#F89D79"
   },
   buttonText: {
@@ -221,5 +430,13 @@ const styles = StyleSheet.create({
     fontFamily: "gentium-book-basic",
     textAlign: "center",
     backgroundColor: 'transparent'
+  },
+  label: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontFamily: 'Roboto',
+    textAlign: "left",
+    marginBottom: 5,
+    marginTop: 5,
+    fontSize: 16
   }
 });

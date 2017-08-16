@@ -125,7 +125,7 @@ export default class Session extends React.Component {
           this.props.store.dispatch(UpdateSession(""));
           this.setState({
             finished: true
-          })
+          });
         });
     }
   }
@@ -146,7 +146,7 @@ export default class Session extends React.Component {
       <View style={styles.container}>
         {this.state.fontsLoaded ? (
           this.state.finished ? (
-            <Redirect to="/session"/>
+            <Redirect to="/dashboard"/>
           ) : (
             <View style={styles.container}>
               <ScrollView>

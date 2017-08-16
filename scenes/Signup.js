@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Link, Redirect } from 'react-router-native';
 import { Font } from 'expo';
 import { getState } from 'redux';
@@ -66,7 +66,7 @@ export default class Signup extends React.Component {
       }
     })
     .catch(e => {
-      console.log(e);
+      Alert.alert("Invalid field");
     });
   }
 

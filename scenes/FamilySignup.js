@@ -26,6 +26,8 @@ export default class FamilySignup extends React.Component {
   async componentDidMount() {
     await Font.loadAsync({
       'gentium-book-basic': require('../assets/fonts/GenBkBasR.ttf'),
+      'Roboto': require('../assets/fonts/Roboto.ttf'),
+      'Roboto_medium': require('../assets/fonts/Roboto-Medium.ttf')
     });
 
     this.setState({ fontLoaded: true });
@@ -69,7 +71,7 @@ export default class FamilySignup extends React.Component {
             <View style={styles.overlay} />
             { this.state.fontLoaded ? (
                   <View style={styles.form}>
-                    <Text style={styles.title}>Enter Family Information</Text>
+                    <Text style={styles.title}>Enter Family Name</Text>
                     <TextInput
                       placeholder="Enter family name"
                       placeholderTextColor="rgba(255, 255, 255, 0.5)"
@@ -77,11 +79,9 @@ export default class FamilySignup extends React.Component {
                       onChangeText={this.handleName}
                       value={this.state.name}
                     />
-                    <View style={styles.button}>
-                      <TouchableOpacity onPress={this.handleSubmit}>
-                         <Text style={styles.buttonText}>Proceed to Dashboard</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+                       <Text style={styles.buttonText}>Proceed to Dashboard</Text>
+                    </TouchableOpacity>
                   </View>
                 ) : null
             }
@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     marginTop: 25,
+    width: "100%",
     backgroundColor: "#F89D79"
   },
   buttonText: {

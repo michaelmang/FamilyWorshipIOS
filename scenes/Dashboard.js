@@ -65,16 +65,14 @@ export default class Dashboard extends React.Component {
             <Text style={styles.title}>Family Worship</Text>
           </View>
           <View style={styles.contentContainer}>
-            <View style={styles.button}>
-              {this.state.addSession ? (
-                  <Redirect to="/add-session"/>
-              ) : (
-                  <TouchableOpacity onPress={this.handleAddSession}>
-                     <Text style={styles.buttonText}>Add Session</Text>
-                  </TouchableOpacity>
-                )
-              }
-            </View>
+            {this.state.addSession ? (
+                <Redirect to="/add-session"/>
+            ) : (
+                <TouchableOpacity style={styles.button} onPress={this.handleAddSession}>
+                   <Text style={styles.buttonText}>Add Session</Text>
+                </TouchableOpacity>
+              )
+            }
             <ScrollView>
             {sessionCards}
             </ScrollView>

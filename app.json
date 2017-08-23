@@ -1,5 +1,12 @@
 {
   "expo": {
-    "sdkVersion": "19.0.0"
+    "name": "Family Worship",
+    "sdkVersion": "19.0.0",
+    "icon": "./assets/images/icon.png",
+    "version": "1.0.0",
+    "slug": "family-worship-app",
+    "ios": {
+      "bundleIdentifier": "com.mikemangialardi.familyworship"
+    }
   }
 }

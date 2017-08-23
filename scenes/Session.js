@@ -74,7 +74,9 @@ export default class Session extends React.Component {
             const prettyVerses = verses.map((verse, index) => {
               let tempVerse = index + 1;
               let prettyVerse = tempVerse.toString();
-              const returnString = prettyVerse + ": " + verse[index + 1] + "";
+              let regexVerse = verse[index + 1]
+                .replace(2019, "'");
+              const returnString = prettyVerse + ": " + regexVerse + "";
               return(
                 <Text key={index}>
                   {returnString}
@@ -179,11 +181,9 @@ export default class Session extends React.Component {
                   )
                 }
               </ScrollView>
-              <View style={styles.button}>
-                <TouchableOpacity onPress={this.updateIndex}>
-                   <Text style={styles.buttonText}>{buttonText[index]} </Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity style={styles.button} onPress={this.updateIndex}>
+                 <Text style={styles.buttonText}>{buttonText[index]} </Text>
+              </TouchableOpacity>
             </View>
             )
           ) : null

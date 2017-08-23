@@ -27,6 +27,8 @@ export default class Signup extends React.Component {
   async componentDidMount() {
     await Font.loadAsync({
       'gentium-book-basic': require('../assets/fonts/GenBkBasR.ttf'),
+      'Roboto': require('../assets/fonts/Roboto.ttf'),
+      'Roboto_medium': require('../assets/fonts/Roboto-Medium.ttf')
     });
 
     this.setState({ fontLoaded: true });
@@ -66,7 +68,7 @@ export default class Signup extends React.Component {
       }
     })
     .catch(e => {
-      Alert.alert("Invalid field");
+      Alert.alert("Signup failed. Try again.");
     });
   }
 
@@ -101,11 +103,9 @@ export default class Signup extends React.Component {
                       onChangeText={this.handlePassword}
                       value={this.state.password}
                     />
-                    <View style={styles.button}>
-                      <TouchableOpacity onPress={this.handleSubmit}>
-                         <Text style={styles.buttonText}>Register</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+                       <Text style={styles.buttonText}>Register</Text>
+                    </TouchableOpacity>
                   </View>
                 ) : null
             }
@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     marginTop: 25,
+    width: "100%",
     backgroundColor: "#F89D79"
   },
   buttonText: {

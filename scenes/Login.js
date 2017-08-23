@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { Animated, StyleSheet, Text, View, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Link, Redirect } from 'react-router-native';
 import { Font } from 'expo';
 import { getState } from 'redux';
@@ -8,6 +8,7 @@ import axios from 'axios';
 import AuthenticateUser from '../actions/AuthenticateUser';
 import StoreFamilyId from '../actions/StoreFamilyId';
 import StoreId from '../actions/StoreId';
+import Loader from '../components/Loader';
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -28,6 +29,8 @@ export default class Login extends React.Component {
   async componentDidMount() {
     await Font.loadAsync({
       'gentium-book-basic': require('../assets/fonts/GenBkBasR.ttf'),
+      'Roboto': require('../assets/fonts/Roboto.ttf'),
+      'Roboto_medium': require('../assets/fonts/Roboto-Medium.ttf')
     });
 
     this.setState({ fontLoaded: true });
@@ -82,7 +85,7 @@ export default class Login extends React.Component {
   render() {
     const backgroundImg = "https://images.pexels.com/photos/295208/pexels-photo-295208.jpeg?w=940&h=650&auto=compress&cs=tinysrgb";
     return (
-      <View style={styles.container}>
+      <Animated.View style={styles.container}>
       { this.state.authenticated ? (
           <Redirect to="/dashboard"/>
         ) : (
@@ -110,18 +113,16 @@ export default class Login extends React.Component {
                       onChangeText={this.handlePassword}
                       value={this.state.password}
                     />
-                    <View style={styles.button}>
-                      <TouchableOpacity onPress={this.handleSubmit}>
-                         <Text style={styles.buttonText}>Login</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+                       <Text style={styles.buttonText}>Login</Text>
+                    </TouchableOpacity>
                   </View>
                 ) : null
             }
           </View>
         )
       }
-      </View>
+      </Animated.View>
     );
   }
 }
@@ -179,6 +180,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     marginTop: 25,
+    width: "100%",
     backgroundColor: "#F89D79"
   },
   buttonText: {

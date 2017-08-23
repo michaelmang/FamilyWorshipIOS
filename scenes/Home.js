@@ -5,12 +5,15 @@ import { Font } from 'expo';
 
 export default class Home extends React.Component {
   state = {
-    fontLoaded: false,
+    fontLoaded: false
   };
 
   async componentDidMount() {
+
     await Font.loadAsync({
       'gentium-book-basic': require('../assets/fonts/GenBkBasR.ttf'),
+      'Roboto': require('../assets/fonts/Roboto.ttf'),
+      'Roboto_medium': require('../assets/fonts/Roboto-Medium.ttf')
     });
 
     this.setState({ fontLoaded: true });
@@ -26,20 +29,17 @@ export default class Home extends React.Component {
             this.state.fontLoaded ? (
               <View>
                 <Text style={styles.title}>Family Worship</Text>
-                <View style={styles.signUpButtonContainer}>
-                   <TouchableOpacity>
-                    <Link to="signup">
-                     <Text style={styles.signUpButton}>Create a Free Account</Text>
-                    </Link>
-                   </TouchableOpacity>
-                </View>
-                <View style={styles.loginButtonContainer}>
-                 <TouchableOpacity>
+                 <TouchableOpacity style={styles.signUpButtonContainer}>
+                  <Link to="signup">
+                   <Text style={styles.signUpButton}>Create a Free Account</Text>
+                  </Link>
+                 </TouchableOpacity>
+                 
+                 <TouchableOpacity style={styles.loginButtonContainer}>
                   <Link to="login">
                     <Text style={styles.loginButton}>Login to Your Account</Text>
                    </Link>
                  </TouchableOpacity>
-                </View>
               </View>
             ) : null
           }

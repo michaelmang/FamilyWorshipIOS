@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, TextInput, Picker } from 'react-native';
+import { Keyboard, StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, TextInput, Picker, Alert } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 var moment = require('moment');
 import { Redirect } from 'react-router-native';
@@ -23,7 +23,7 @@ export default class AddSession extends React.Component {
         'Deuteronomy',     'Joshua',          'Judges',        'Ruth',
         '1 Samuel',        '2 Samuel',        '1 Kings',       '2 Kings',
         '1 Chronicles',    '2 Chronicles',    'Ezra',          'Nehemiah',
-        'Esther',          'Job',             'Psalm',         'Proverbs',
+        'Esther',          'Job',             'Psalms',         'Proverbs',
         'Ecclesiastes',    'Song of Solomon', 'Isaiah',        'Jeremiah',
         'Lamentations',    'Ezekiel',         'Daniel',        'Hosea',
         'Joel',            'Amos',            'Obadiah',       'Jonah',
@@ -56,6 +56,7 @@ export default class AddSession extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleBook = this.handleBook.bind(this);
     this.handleChapter = this.handleChapter.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
 
   }
 
@@ -159,9 +160,15 @@ export default class AddSession extends React.Component {
       });
     })
     .catch(e => {
-      console.log(e);
+      Alert.alert("Session creation failed. Please check your fields.");
     });
   }
+
+  onKeyPress = ({ nativeEvent }) => {
+    if (nativeEvent.key === 'Enter') {
+      Keyboard.dismiss();
+    }
+  };
 
   render() {
     const backgroundImg = "https://images.pexels.com/photos/159679/bible-job-reading-christianity-159679.jpeg?w=940&h=650&auto=compress&cs=tinysrgb";
@@ -203,7 +210,7 @@ export default class AddSession extends React.Component {
             <Image source={{uri: backgroundImg}} style={styles.backgroundImg} />
             <View style={styles.overlay} />
             { this.state.fontLoaded ? (
-                  <ScrollView>
+                  <ScrollView style={{width: "100%"}}>
                   <View
                     style={styles.form}
                   >
@@ -270,6 +277,8 @@ export default class AddSession extends React.Component {
                       style={styles.textInput}
                       onChangeText={(text) => { this.setState({openingNotes: text} )}}
                       value={this.state.openingNotes}
+                      returnKeyType={'done'}
+                      onKeyPress={this.onKeyPress}
                     />
                     <Text style={styles.label}>First Psalm</Text>
                     <Picker
@@ -324,6 +333,8 @@ export default class AddSession extends React.Component {
                       style={styles.textInput}
                       onChangeText={(text) => { this.setState({messageNotes: text} )}}
                       value={this.state.messageNotes}
+                      returnKeyType={'done'}
+                      onKeyPress={this.onKeyPress}
                     />
                     <Text style={styles.label}>Second Psalm</Text>
                     <Picker
@@ -348,12 +359,12 @@ export default class AddSession extends React.Component {
                       style={styles.textInput}
                       onChangeText={(text) => { this.setState({closingNotes: text} )}}
                       value={this.state.closingNotes}
+                      returnKeyType={'done'}
+                      onKeyPress={this.onKeyPress}
                     />
-                    <View style={styles.button}>
-                      <TouchableOpacity onPress={this.handleSubmit}>
-                         <Text style={styles.buttonText}>Add</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+                       <Text style={styles.buttonText}>Add</Text>
+                    </TouchableOpacity>
                   </View>
                   </ScrollView>
                 ) : null
@@ -402,7 +413,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   form: {
-    padding: 10,
+    padding: 20,
     paddingTop: 35,
     flex: 1,
     alignItems: 'flex-start',
